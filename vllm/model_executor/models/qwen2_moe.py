@@ -58,6 +58,8 @@ from .utils import (AutoWeightsLoader, extract_layer_index,
                     make_empty_intermediate_tensors_factory, make_layers,
                     maybe_prefix)
 
+from vllm.expert_tracer import expert_tracer
+
 logger = init_logger(__name__)
 
 
@@ -151,6 +153,7 @@ class Qwen2MoeSparseMoeBlock(nn.Module):
 
         # router_logits: (num_tokens, n_experts)
         router_logits, _ = self.gate(hidden_states)
+        expert_tracer.add("qwen2", router_logits, self.experts.top_k)
         final_hidden_states = self.experts(hidden_states=hidden_states,
                                            router_logits=router_logits)
         if shared_output is not None:
