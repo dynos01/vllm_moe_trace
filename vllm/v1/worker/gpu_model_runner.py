@@ -58,6 +58,8 @@ from vllm.v1.worker.lora_model_runner_mixin import LoRAModelRunnerMixin
 from .utils import (gather_mm_placeholders, sanity_check_mm_encoder_outputs,
                     scatter_mm_placeholders)
 
+from vllm.expert_tracer import expert_tracer
+
 if TYPE_CHECKING:
     import xgrammar as xgr
 
