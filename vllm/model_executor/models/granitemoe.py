@@ -51,6 +51,7 @@ from . import mixtral
 from .interfaces import SupportsLoRA, SupportsPP
 from .utils import AutoWeightsLoader, make_layers, maybe_prefix
 
+from vllm.expert_tracer import expert_tracer
 
 class GraniteMoeMoE(nn.Module):
     """A tensor-parallel MoE implementation for GraniteMoe that shards each
@@ -97,6 +98,7 @@ class GraniteMoeMoE(nn.Module):
         hidden_states = hidden_states.view(-1, self.hidden_size)
         # router_logits: (num_tokens, n_experts)
         router_logits, _ = self.gate(hidden_states)
+        expert_tracer.add("granite", router_logits, self.experts.top_k)
         final_hidden_states = self.experts(hidden_states, router_logits)
         return final_hidden_states.view(orig_shape)
 
