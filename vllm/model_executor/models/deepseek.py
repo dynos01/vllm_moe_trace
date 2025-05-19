@@ -56,6 +56,8 @@ from .utils import (AutoWeightsLoader, extract_layer_index,
                     make_empty_intermediate_tensors_factory, make_layers,
                     maybe_prefix)
 
+from vllm.expert_tracer import expert_tracer
+
 
 class DeepseekMLP(nn.Module):
 
@@ -161,6 +163,7 @@ class DeepseekMoE(nn.Module):
             shared_output = self.shared_experts(hidden_states)
         # router_logits: (num_tokens, n_experts)
         router_logits, _ = self.gate(hidden_states)
+        expert_tracer.add("deepseek", router_logits, self.experts.top_k)
         final_hidden_states = fused_moe(hidden_states,
                                         self.w1,
                                         self.w2,
