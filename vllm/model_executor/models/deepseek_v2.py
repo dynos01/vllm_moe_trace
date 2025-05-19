@@ -55,6 +55,8 @@ from .utils import (PPMissingLayer, is_pp_missing_parameter,
                     make_empty_intermediate_tensors_factory, make_layers,
                     maybe_prefix)
 
+from vllm.expert_tracer import expert_tracer
+
 
 class DeepseekV2MLP(nn.Module):
 
@@ -154,6 +156,7 @@ class DeepseekV2MoE(nn.Module):
             shared_output = self.shared_experts(hidden_states)
         # router_logits: (num_tokens, n_experts)
         router_logits, _ = self.gate(hidden_states)
+        expert_tracer.add("deepseek_v2", router_logits, self.experts.top_k)
 
         if hidden_states.dtype != torch.float16:
             final_hidden_states = self.experts(
