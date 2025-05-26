@@ -28,6 +28,8 @@ from vllm.v1.utils import report_usage_stats
 from vllm.v1.worker.gpu_model_runner import GPUModelRunner
 from vllm.v1.worker.worker_base import WorkerBase
 
+from vllm.expert_tracer import expert_tracer
+
 logger = init_logger(__name__)
 
 if TYPE_CHECKING:
@@ -258,6 +260,8 @@ class Worker(WorkerBase):
         # Reset the seed to ensure that the random state is not affected by
         # the model initialization and profiling.
         set_random_seed(self.model_config.seed)
+
+        expert_tracer.ready()
 
     def get_model(self) -> nn.Module:
         return self.model_runner.get_model()

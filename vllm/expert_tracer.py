@@ -7,10 +7,17 @@ from typing import List
 
 class TraceContext(threading.local):
     def __init__(self) -> None:
+        self.startup = False
         self.clear()
+
+    def ready(self) -> None:
+        self.startup = True
 
     def add(self, model_name: str, router_logits: torch.Tensor, k: int) -> None:
         if self.base_gpu != torch.cuda.current_device():
+            return
+        
+        if not self.startup:
             return
 
         self.model_name = model_name
@@ -22,6 +29,9 @@ class TraceContext(threading.local):
             return
 
         if self.model_name is None:
+            return
+        
+        if not self.startup:
             return
 
         try:
