@@ -1,5 +1,6 @@
 # SPDX-License-Identifier: Apache-2.0
 
+import os
 import copy
 import gc
 import time
@@ -1333,7 +1334,8 @@ class GPUModelRunner(LoRAModelRunnerMixin):
             get_kv_transfer_group().clear_connector_metadata()
 
         phase = "prefill" if len(scheduler_output.scheduled_new_reqs) > 0 else "decode"
-        expert_tracer.dump("/path/to/moe.json", phase)
+        path = os.path.expanduser("~/moe.json")
+        expert_tracer.dump(path, phase)
 
         return ModelRunnerOutput(
             req_ids=self.input_batch.req_ids,
