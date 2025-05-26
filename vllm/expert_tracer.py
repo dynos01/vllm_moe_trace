@@ -70,6 +70,6 @@ def _transform(router_logits: torch.Tensor, k: int) -> List[int]:
         dim=-1
     )
 
-    return idx.tolist()
+    return idx.tolist()[0]
 
 expert_tracer = TraceContext()
