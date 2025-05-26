@@ -14,7 +14,7 @@ class TraceContext(threading.local):
         self.k = k
         self.records.append(router_logits)
 
-    def dump(self, path: str) -> None:
+    def dump(self, path: str, phase: str) -> None:
         if self.model_name is None:
             return
 
@@ -29,6 +29,7 @@ class TraceContext(threading.local):
         data = {
             "model_name": self.model_name,
             "time": str(datetime.datetime.now()),
+            "phase": phase,
             "experts": [_transform(i, self.k) for i in self.records],
         }
 

@@ -1332,7 +1332,8 @@ class GPUModelRunner(LoRAModelRunnerMixin):
         if has_kv_transfer_group():
             get_kv_transfer_group().clear_connector_metadata()
 
-        expert_tracer.dump("/path/to/moe.json")
+        phase = "prefill" if len(scheduler_output.scheduled_new_reqs) > 0 else "decode"
+        expert_tracer.dump("/path/to/moe.json", phase)
 
         return ModelRunnerOutput(
             req_ids=self.input_batch.req_ids,
