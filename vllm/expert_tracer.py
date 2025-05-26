@@ -10,11 +10,17 @@ class TraceContext(threading.local):
         self.clear()
 
     def add(self, model_name: str, router_logits: torch.Tensor, k: int) -> None:
+        if self.base_gpu != torch.cuda.current_device():
+            return
+
         self.model_name = model_name
         self.k = k
         self.records.append(router_logits)
 
     def dump(self, path: str, phase: str) -> None:
+        if self.base_gpu != torch.cuda.current_device():
+            return
+
         if self.model_name is None:
             return
 
@@ -44,6 +50,7 @@ class TraceContext(threading.local):
         self.model_name = None
         self.k = 1
         self.records = []
+        self.base_gpu = torch.cuda.current_device()
 
 def _transform(router_logits: torch.Tensor, k: int) -> List[int]:
     router_weights = torch.nn.functional.softmax(router_logits, dim=-1)
